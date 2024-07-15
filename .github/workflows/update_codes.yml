@@ -16,11 +16,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'
-
     - name: Install jq
       run: sudo apt-get install jq
 
@@ -49,7 +44,7 @@ jobs:
 
         mv "$codes_file.tmp" "$codes_file"
 
-        echo "::set-output name=assigned_code::$assigned_code"
+        echo "assigned_code=$assigned_code" >> $GITHUB_ENV
 
     - name: Commit changes
       run: |
