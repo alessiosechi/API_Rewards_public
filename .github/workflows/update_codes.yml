@@ -1,4 +1,4 @@
-name: Remove Code
+name: Redeem Reward Code
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ on:
         type: integer
 
 jobs:
-  remove-code:
+  redeem-code:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,13 +19,22 @@ jobs:
     - name: Install jq
       run: sudo apt-get install jq
 
-    - name: Remove code
-      id: remove_code
+    - name: Redeem code
+      id: redeem_code
       run: |
         reward_id=${{ github.event.inputs.reward_id }}
         codes_file="private/codes.json"
 
-        # Esegui la rimozione del codice con jq
+        # Trova il primo codice disponibile per il reward_id fornito
+        assigned_code=$(jq -r --argjson reward_id "$reward_id" '
+        .codes[] | select(.reward_id == $reward_id) | .codes[0]' "$codes_file")
+
+        if [ -z "$assigned_code" ]; then
+          echo "No codes available for reward_id $reward_id"
+          exit 1
+        fi
+
+        # Aggiorna il file codes.json per rimuovere il primo codice
         jq --argjson reward_id "$reward_id" '
         .codes |= map(
           if .reward_id == $reward_id then
@@ -37,24 +46,14 @@ jobs:
 
         mv "$codes_file.tmp" "$codes_file"
 
-        # Controlla se l'eliminazione è avvenuta con successo
-        assigned_code=$(jq -r --argjson reward_id "$reward_id" '
-        .codes[] | select(.reward_id == $reward_id) | .codes[0]' "$codes_file")
-
-        if [ -z "$assigned_code" ]; then
-          echo "DELETION_SUCCESS=true" >> $GITHUB_ENV
-        else
-          echo "DELETION_SUCCESS=false" >> $GITHUB_ENV
-        fi
-
-      env:
-        GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+        echo "::set-output name=assigned_code::$assigned_code"
 
     - name: Commit changes
-      if: env.DELETION_SUCCESS == 'true'
       run: |
         git config --global user.name 'github-actions'
         git config --global user.email 'github-actions@github.com'
         git add private/codes.json
-        git commit -m "Update codes for reward ID ${{ github.event.inputs.reward_id }}"
+        git commit -m "Redeemed code for reward ID ${{ github.event.inputs.reward_id }}"
         git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
