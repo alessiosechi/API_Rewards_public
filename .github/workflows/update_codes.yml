@@ -1,4 +1,4 @@
-name: Redeem Reward Code
+name: Update Codes
 
 on:
   workflow_dispatch:
@@ -9,32 +9,35 @@ on:
         type: integer
 
 jobs:
-  redeem-code:
+  update-codes:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
     - name: Install jq
       run: sudo apt-get install jq
 
-    - name: Redeem code
-      id: redeem_code
+    - name: Update codes.json
+      id: update_codes
       run: |
         reward_id=${{ github.event.inputs.reward_id }}
         codes_file="private/codes.json"
-
-        # Trova il primo codice disponibile per il reward_id fornito
+        
         assigned_code=$(jq -r --argjson reward_id "$reward_id" '
         .codes[] | select(.reward_id == $reward_id) | .codes[0]' "$codes_file")
 
         if [ -z "$assigned_code" ]; then
-          echo "No codes available for reward_id $reward_id"
+          echo "No codes available"
           exit 1
         fi
 
-        # Aggiorna il file codes.json per rimuovere il primo codice
         jq --argjson reward_id "$reward_id" '
         .codes |= map(
           if .reward_id == $reward_id then
@@ -53,7 +56,7 @@ jobs:
         git config --global user.name 'github-actions'
         git config --global user.email 'github-actions@github.com'
         git add private/codes.json
-        git commit -m "Redeemed code for reward ID ${{ github.event.inputs.reward_id }}"
+        git commit -m "Update codes for reward ID ${{ github.event.inputs.reward_id }}"
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
