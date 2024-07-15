@@ -1,1 +1,17 @@
+{
+  "codes": [
+    {
+      "reward_id": 1,
+      "codes": ["AMAZON123456", "AMAZON654321"]
+    },
+    {
+      "reward_id": 2,
+      "codes": ["STARBUCKS123", "STARBUCKS456"]
+    },
+    {
+      "reward_id": 3,
+      "codes": ["NETFLIX123", "NETFLIX456"]
+    }
+  ]
+}
 
