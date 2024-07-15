@@ -20,10 +20,12 @@ jobs:
       run: sudo apt-get install jq
 
     - name: Remove code
+      id: remove_code
       run: |
         reward_id=${{ github.event.inputs.reward_id }}
         codes_file="private/codes.json"
 
+        # Esegui la rimozione del codice con jq
         jq --argjson reward_id "$reward_id" '
         .codes |= map(
           if .reward_id == $reward_id then
@@ -35,5 +37,24 @@ jobs:
 
         mv "$codes_file.tmp" "$codes_file"
 
+        # Controlla se l'eliminazione è avvenuta con successo
+        assigned_code=$(jq -r --argjson reward_id "$reward_id" '
+        .codes[] | select(.reward_id == $reward_id) | .codes[0]' "$codes_file")
+
+        if [ -z "$assigned_code" ]; then
+          echo "::set-output name=deletion_success::true"
+        else
+          echo "::set-output name=deletion_success::false"
+        fi
+
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Commit changes
+      if: steps.remove_code.outputs.deletion_success == 'true'
+      run: |
+        git config --global user.name 'github-actions'
+        git config --global user.email 'github-actions@github.com'
+        git add private/codes.json
+        git commit -m "Update codes for reward ID ${{ github.event.inputs.reward_id }}"
+        git push
