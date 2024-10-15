@@ -5,7 +5,7 @@
       "name": "Amazon Gift Card",
       "value": 1000,
       "description": "Gift card valid for purchases on Amazon",
-      "expiration_date": "2024-12-31"
+      "expirationDate": "2024-12-31"
     },
     {
       "id": 2,
