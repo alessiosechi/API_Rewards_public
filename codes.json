@@ -1,0 +1,17 @@
+{
+  "codes": [
+    {
+      "id": 1,
+      "name": "Amazon Gift Card",
+      "reward_code": "AMZ1000" 
+    },
+    {
+      "id": 2,
+      "reward_code": "SBK20" 
+    },
+    {
+      "id": 3,
+      "reward_code": "NET15" 
+    }
+  ]
+}
