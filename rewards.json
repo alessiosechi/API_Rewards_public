@@ -2,24 +2,24 @@
   "rewards": [
     {
       "id": 1,
-      "name": "Amazon Gift Card",
-      "value": 1000,
-      "description": "Gift card valid for purchases on Amazon",
-      "expiration_date": "2024-12-31"
+      "nome": "Amazon Gift Card",
+      "valore": 1000,
+      "descrizione": "Gift card valid for purchases on Amazon",
+      "dataScadenza": "2024-12-31"
     },
     {
       "id": 2,
-      "name": "Starbucks Voucher",
-      "value": 20,
-      "description": "Voucher for Starbucks coffee and beverages",
-      "expiration_date": "2024-10-15"
+      "nome": "Starbucks Voucher",
+      "valore": 20,
+      "descrizione": "Voucher for Starbucks coffee and beverages",
+      "dataScadenza": "2024-10-15"
     },
     {
       "id": 3,
-      "name": "Netflix Subscription",
-      "value": 15,
-      "description": "Subscription to Netflix streaming service",
-      "expiration_date": "2025-01-15"
+      "nome": "Netflix Subscription",
+      "valore": 15,
+      "descrizione": "Subscription to Netflix streaming service",
+      "dataScadenza": "2025-01-15"
     }
   ]
 }
